@@ -1,0 +1,33 @@
+' -- convert from freebasic, april-mai 2024
+' -- simple example string / zstring halProment Basic
+' -- Generatíng a string of n repeated characters
+'
+function generateRepeatedChar(character as string, n as Integer) as string
+    dim result as pstring = ""
+    dim i as integer
+
+    for i = 1 to n
+        result = result + character
+    next
+
+    return result
+end function
+
+' Example usage
+dim repeatedString as pstring
+repeatedString = generateRepeatedChar("*#", 5)
+
+printy repeatedString ' Output: *#*#*#*#*#
+
+' Create a zString
+dim zString as pstring = ""
+printy len(zString) ' Output: 0
+
+
+'In this case, zString is an empty string, 
+'meaning it contains no characters. 
+'The length of zString is zero.
+
+dim zString as pstring = "hey"
+printy len(zString) ' Output: 3
+
