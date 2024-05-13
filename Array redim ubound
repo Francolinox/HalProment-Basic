@@ -1,0 +1,35 @@
+'
+' -- array index redim ubound lbound example
+' -- halPromentBasic, mai-2024,frank bruebach
+'
+pindex 1
+
+dim MyArray(10) as integer '1 TO 10
+dim i as integer
+
+' Fill the array with some values
+for i = LBOUND(MyArray) to UBOUND(MyArray)
+    MyArray(i) = i * 10
+next i
+
+' Display the values in the array
+for i = LBOUND(MyArray) to UBOUND(MyArray)
+    printy "MyArray(" + str(i) + ") = " + str(MyArray(i))
+next i
+
+' Re-dimension the array to have 15 elements
+redim integer MyArray(15) '1 to 15
+
+
+' Fill the new array elements with some values
+for i = UBOUND(MyArray) - 8 to UBOUND(MyArray) '- 4 ' -10
+    MyArray(i) = i * 5
+next i
+
+' Display the values in the re-dimensioned array
+for i = LBOUND(MyArray) to UBOUND(MyArray)
+    printy "MyArray(" + str(i) + ") = " + str(MyArray(i))
+next i
+
+' ends
+
