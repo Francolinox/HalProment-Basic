@@ -1,0 +1,13 @@
+int main {
+
+int x = 5;
+int y = 6;
+int sum = x + y; '
+'int mult = x * y;
+'cout << sum;
+cout sum;
+'cout mult; ' 30 ok
+
+return 0;
+}
+' result 11 ok
