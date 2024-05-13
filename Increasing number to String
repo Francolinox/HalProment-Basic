@@ -1,0 +1,33 @@
+' -- when a number is assigned to a string, it autoconverts.
+' -- halProment Basic
+' --
+
+pro flag=10
+flag++
+printy flag '11
+
+' number to an increasing string
+'1)
+pstring s="200mona"
+s=val(s)+1 '201
+printy s 'result: "201"
+
+'2)
+pro k
+k++
+s=val(s)+k
+printy s 'result: "202"
+
+'3)
+pstring m=" Mona"
+pstring st="3000 " + m
+st=val(st)+1 
+printy st + m 'result: 3001 Mona
+
+'4)
+pro km=100
+km++
+pstring m=" Mona"
+pstring st="3000 " + m
+st=val(st)+val(km)+1 
+printy st + m 'result: 3102 Mona
