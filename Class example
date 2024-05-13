@@ -1,0 +1,34 @@
+' class test addition, division
+'
+class statis
+
+method plus() as double
+method average() as double
+	dax(100) as double
+	dnx as long
+end class
+
+'----------------
+methods of statis
+'================
+
+method plus() as double
+	dim i as integer
+	for i = 1 to this.dnx
+method += this.dax(i)
+next
+end method
+
+method average() as double
+  method = this.plus / this.dnx 'division
+  'method = this.plus + this.dnx 'addition
+end method
+
+end methods
+
+'test
+dim stx as statis
+
+stx.dax => 2,4,6,8,10,12,14,16,18,20
+stx.dnx = 8 
+print `plus: ` str(stx.plus) ` Average: ` str stx.average ' 72, 9 '' 72,80
