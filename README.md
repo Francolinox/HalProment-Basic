@@ -1,4 +1,4 @@
-HalPromentBasic 2024::
+HalPromentBasic 2024::("HPB").
 Very Fast, stable, expandable,  32-bit, 64-bit OS.
 unicode source scripts support.. opengl features ( game development possible).
 winapi sdk programming like winmain(wndproc)
