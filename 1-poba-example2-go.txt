@@ -1,0 +1,17 @@
+' --> only a test example for powerbasic looks alike, part two
+' --> converted to halproment Basic, by frank bruebach, march-july2024
+'
+#COMPILE_EXE
+#DIM_ALL
+take poba
+
+FUNCTION PBMAIN () AS LONG
+LOCAL a,b,c AS INTEGER
+a=2024 : b=365-210 ' circa around for 7 month
+c=a*b
+FUNCTION=c
+
+MSGBOX 0,"our days counted on earth: " + STR$(c),"PowerBASIC" ,2
+'313720 days
+END FUNCTION
+
