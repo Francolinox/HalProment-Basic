@@ -1,0 +1,16 @@
+' --> loadfile *.txt and unicode, april-august2024
+' --> halProment, test version
+' 
+' 1) -------- //
+string stunic
+
+loadfile "turnturnturn.txt",stunic ' go with string stunic
+
+print stunic
+
+' 2) -------- //
+wstring stunic2
+
+loadfile "chines.txt",stunic2 ' go
+
+print stunic2
