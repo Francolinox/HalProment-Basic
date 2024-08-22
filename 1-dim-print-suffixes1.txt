@@ -1,0 +1,34 @@
+' print alternatives and suffixes part one, all examples are running well
+' july - august 2024, frank bruebach, halProment,22-08-2024
+'
+'
+dim a as dword
+p% a ' p% = dword
+a=20
+print a
+
+string b
+b="Hello tarzan"
+p? b ' p?=print alternative
+
+pstring c
+c="Hello tarzan2"
+p? c
+
+p$ c ' p$=string alternative
+c="Hello jane"
+p? c
+
+p$ d ' p$=string
+d="Hello tarzan3"
+p& d ' p&=print alternative
+
+dim e as long
+e=2024*365
+print e '738760
+
+p% e
+e=2024*365
+p? e '738760
+
+' ends
