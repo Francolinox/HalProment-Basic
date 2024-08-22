@@ -1,0 +1,190 @@
+  ' -- halProment: mandelbrot example, julia rings, winmain() sdk style
+  ' -- translation from freebasic code snippets, frank bruebach, 21-02-2024, 25-07-2024
+  '
+  $ sfile "testMandelbrot.exe"
+  take promgui
+  
+  'const ID_TIMER = 1
+  %ID_TIMER = 100
+ 
+  dim as integer maxIterations = 1000
+  dim as double xMin = -2.0, xMax = 1.0, yMin = -1.5, yMax = 1.5
+  dim as double zoomFactor = 1.0
+
+  dim cmdline as asciiz ptr, inst as pro
+  @cmdline=GetCommandLine
+  inst=GetModuleHandle 0
+
+DECLARE FUNCTION SetPixel lib "GDI32.DLL" ALIAS "SetPixel" ( _
+   BYVAL hdc AS DWORD _                                 
+ , BYVAL x AS LONG _                                    
+ , BYVAL y AS LONG _                                    
+ , BYVAL color AS DWORD _                               
+ ) AS DWORD                                             
+
+DECLARE FUNCTION SetPixelV lib "GDI32.DLL" alias "SetPixelV" ( _
+   BYVAL hdc AS DWORD _                                 
+ , BYVAL x AS LONG _                                    
+ , BYVAL y AS LONG _                                    
+ , BYVAL color AS DWORD _                               
+ ) AS LONG                                              
+
+macro RGB(r,g,b) {r+(g<<8)+(b<<16)}
+typedef dword COLORREF ' R G B bytes
+
+function RGB(sys red,green,blue) as sys
+  sys color
+  color = red
+  color = color + green*256
+  color = color + blue*65536
+  return color
+end function
+
+function mandelbrot(cReal as double, cImaginary as double, maxIterations as integer) as integer
+    dim as double zReal = 0.0, zImaginary = 0.0
+    dim as double temp
+    dim as integer iteration = 0
+
+    while iteration < maxIterations
+        temp = zReal * zReal - zImaginary * zImaginary + cReal
+        zImaginary = 2.0 * zReal * zImaginary + cImaginary
+        zReal = temp
+        iteration += 1
+
+        if (zReal * zReal + zImaginary * zImaginary) > 4.0 then
+            return iteration
+        end if
+    wend
+    return maxIterations
+end function
+
+function juliaRing(cReal as double, cImaginary as double, zReal as double, zImaginary as double, maxIterations as integer) as integer
+    dim as double temp
+    dim as integer iteration = 0
+
+    while iteration < maxIterations
+        temp = zReal * zReal - zImaginary * zImaginary + cReal
+        zImaginary = 2.0 * zReal * zImaginary + cImaginary
+        zReal = temp
+        iteration += 1
+
+        if (abs(zReal) + abs(zImaginary)) > 2.0 then
+            return iteration
+        end if
+    wend
+    return maxIterations
+end function
+
+sub drawMandelbrotWithJuliaRing(hdc as sys, widths as integer, height as integer, xMin as double, xMax as double, yMin as double, yMax as double, maxIterations as integer)
+    dim as double x, y, cReal, cImaginary
+    dim as integer colors, iteration
+
+    for x = 0 to widths - 1
+        for y = 0 to height - 1
+            cReal = xMin + (xMax - xMin) * x / widths
+            cImaginary = yMin + (yMax - yMin) * y / height
+            iteration = mandelbrot(cReal, cImaginary, maxIterations)
+            ' I added here a Julia Ring
+            iteration = juliaRing(-0.8, 0.156, cReal, cImaginary, maxIterations)
+
+            colors = RGB(iteration * 8, iteration * 16, iteration * 32) 'here you can change a lot of things even rnd()
+            SetPixelV(hdc, x, y, colors)
+        next y
+    next x
+end sub
+
+  '--------------------------------------------------------------------
+  Function WinMain(pro inst, prevInst, asciiz*cmdline, pro show) as pro
+  '====================================================================
+  WndClass wc
+  MSG      wm
+
+  pro hwnd, wwd, wht, wtx, wty, tax
+  with wc
+  .style = CS_HREDRAW or CS_VREDRAW
+  .lpfnWndProc = @WndProc 
+  .cbClsExtra =0
+  .cbWndExtra =0    
+  .hInstance =inst
+  .hIcon=LoadIcon 0, IDI_APPLICATION
+  .hCursor=LoadCursor 0,IDC_ARROW
+  .hbrBackground = GetStockObject WHITE_BRUSH 
+  .lpszMenuName =null
+  .lpszClassName = strptr "Demo"
+  end with
+  RegisterClass (@wc)
+ 
+  Wwd = 900 : Wht = 600
+  Tax = GetSystemMetrics SM_CXSCREEN
+  Wtx = (Tax - Wwd) /2
+  Tax = GetSystemMetrics SM_CYSCREEN
+  Wty = (Tax - Wht) /2
+ 
+  hwnd = CreateWindowEx 0,wc.lpszClassName,"Mandelbrot JuliaRing SDK Window",WS_OVERLAPPEDWINDOW,Wtx,Wty,Wwd,Wht,0,0,inst,0
+  ShowWindow hwnd,SW_SHOW
+  UpdateWindow hwnd
+  '
+  pro bRet
+  '
+  do while bRet := GetMessage (@wm, 0, 0, 0)
+    if bRet = -1 then
+      'show an error message
+    else
+      TranslateMessage @wm
+      DispatchMessage @wm
+    end if
+  wend
+  End Function 
+
+  dim as rect crect 
+  '------------------------------------------------------------------ //
+  function WndProc ( pro hWnd, wMsg, wParam, lparam ) as pro callback
+    static as pro hdc
+    static as String txt
+    static as PaintStruct Paintst
+    static as pro initialized = false
+    
+     select wMsg        
+      case WM_CREATE
+            sys hdc = GetDC(hwnd)
+            GetClientRect  (hWnd,cRect)
+            ' Set up a timer for animation (optional)
+            SetTimer(hwnd, ID_TIMER, 500, null) '50, NULL)
+            initialized = true
+            ReleaseDC(hwnd, hdc)
+      
+      case WM_DESTROY
+
+            ReleaseDC(hwnd, hdc)
+            KillTimer(hwnd, ID_TIMER)
+            PostQuitMessage(0)
+  
+      case WM_DESTROY
+          
+      PostQuitMessage 0
+        
+      case WM_PAINT
+      
+      GetClientRect  hWnd,cRect
+      hDC=BeginPaint hWnd,Paintst
+      pro p
+      if initialized then
+          p=drawMandelbrotWithJuliaRing(hdc, 900, 700, -2.0, 1.0, -1.5, 1.5, 200)
+      end if
+      validateRect(hwnd, null)
+
+       EndPaint hWnd,Paintst
+      
+      case WM_TIMER   
+      case WM_KEYDOWN                  
+      Select wParam
+      
+	Case 27 : SendMessage hwnd, WM_CLOSE, 0, 0     
+      End Select      
+      case else                
+        function=DefWindowProc hWnd,wMsg,wParam,lParam
+    end select
+  end function 
+
+ WinMain inst,0,cmdline,SW_NORMAL
+ ' ends
