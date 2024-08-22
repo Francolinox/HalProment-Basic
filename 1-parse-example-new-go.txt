@@ -1,0 +1,43 @@
+' new parse example halProment, april-august2024, frank bruebach
+'
+'
+take kons
+pindex 1
+
+function Parse(bstring expression, delimiter as string= ",", int index ) as bstring 
+    int count = 1
+    string temp = ""
+    int d = 1
+    int f = 0
+    int i = 0
+    string z ""
+    do
+        i = instr(d, expression, delimiter)
+        if i > 0 then
+            f = i
+            if count = index then
+                exit do
+            end if
+            count += 1
+            f += Len(delimiter)
+            d = f
+        elseif count = index then
+            f = Len(expression) + 1
+        end if
+    loop until i = 0
+     return MID(expression,d, f-d) 
+         
+end function
+
+bstring a,b,c
+a = parse("one,two,three", ,2) '' ok -> returns "two"  
+
+b = parse("xyz", , 1)            ' ok -> returns "xyz"
+
+c = parse("xx1x","x", 3)         ' ok -> returns "1" 
+
+Printl "'" + a + "'"
+Printl "'" + b + "'"
+Printl "'" + c + "'"
+
+wait
