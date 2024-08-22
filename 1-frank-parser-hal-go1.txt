@@ -1,0 +1,126 @@
+' -- new parser example, halPromentBasic, march-august2024, frank bruebach
+' -- 
+'
+take kons 
+pindex 0 
+
+Dim token As String = ""
+Dim tokenCount As Integer = 0 
+ReDim string tokens(tokenCount) 
+
+
+' Split() function 
+Function Split(string inputs, delimiter, string *tokens(redim) ) As Integer 
+    Dim token As String = ""
+    Dim tokenCount As Integer = 0
+    redim string tokens(100) 
+    int i
+    For i = 1 To Len(inputs)
+        If Mid(inputs, i, 1) = delimiter Then
+            If token <> "" Then
+                tokens(tokenCount) = token
+                tokenCount += 1
+                token = ""
+            End If
+        Else
+            token += Mid(inputs, i, 1)
+        End If
+    Next
+    If token <> "" Then
+        ReDim string tokens(tokenCount) 
+        tokens(tokenCount) = token
+    End If
+
+    Return tokenCount
+End Function
+
+
+' IsNumeric() function 
+Function IsNumeric(string value ) As Integer
+    Static string numericChars
+    numericChars = "0123456789.-"
+    If Len(value) = 0 Then Return False
+    int i
+    int dotCount = 0
+    For i = 1 To Len(value)
+        string c = Mid(value, i, 1)
+        If InStr(numericChars, c) = 0 Then
+            Return False
+        ElseIf c = "." Then
+            dotCount += 1
+            If dotCount > 1 Then
+                Return False
+            End If
+        End If
+    Next
+    Return True
+End Function
+
+
+' EvaluateExpression function
+Function EvaluateExpression(string inputs) As Double
+ 
+    Split(inputs," ", tokens()) 
+    Dim total As Double = 0
+    Dim currentNumber As Double = 0
+    Dim operators As String = "+"
+    int i
+    For i = 0 To UBound(tokens)
+        Dim token As String = tokens(i)
+
+        If IsNumeric(token) Then
+            currentNumber = Val(token)
+            If operators = "+" Then
+                total += currentNumber
+            ElseIf operators = "-" Then
+                total -= currentNumber
+            ElseIf operators = "*" Then
+                total *= currentNumber
+            ElseIf operators = "/" Then
+                If currentNumber <> 0 Then
+                    total /= currentNumber
+                Else
+                    Print "Error: Division by zero"
+                    Exit For
+                End If
+            End If
+            operators = "+"
+        Else
+            operators = token
+        End If
+    Next
+
+    Return total
+End Function
+
+' Test my code with different inputs
+Dim inputs As String = "2 + 3 * 10" ' 50 result ok
+Dim result As Double
+
+result = EvaluateExpression(inputs) 
+
+' all tests are running fine here for calculations
+' + - * /
+' Test my code with different inputs
+' Dim inputs As String = "2 + 3 * 10" ' 50 ok
+' Dim inputs As String = "5 + 6 + 10" ' 21 ok
+' Dim inputs As String = "8 * 5" ' 40 ok
+' Dim inputs As String = "20 / 4 " ' 5 ok
+' Dim inputs As String = "-20 10" ' -10 ok
+' Dim inputs As String = "-10  20" ' ok
+ Dim inputs As String = "30 -20" ' 10 ok
+
+
+If result <> 0 Then
+    Printl "The total is " + result ' result: 50 ok 
+Else
+    Printl "Error: Invalid input"
+End If
+
+printl result 
+
+' Wait for a key press before closing the console
+Printl "Press any key to continue..."
+
+wait
+' ends
