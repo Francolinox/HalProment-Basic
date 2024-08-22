@@ -1,0 +1,190 @@
+  ' --> openGL scene HalPromentBasic, based on a part of o2 example by charles pegge
+  ' --> march,july,august2024 test example for openGL scene by frank bruebach
+  '
+  $ sFile  "openGLscene2.exe"
+  $ title     "Rotating Quad Pyramid Scene"
+  % ExplicitMain ' 
+
+  take proglscene
+  take opgl2\proshape
+  take opgl2\protex
+  take opgl2\promat
+  take opgl2\propart
+
+  pindex 1
+  pro   GdiplusToken
+  float ang1
+  float ma[16]
+  float li[16]
+  pro   cube,sphere
+  Cloud cloud1
+
+  sub RenderPlane(float x,y,z,sc,tex,u,v) ' pro
+  =======================================
+  glBindTexture GL_TEXTURE_2D,tex
+  glPushMatrix
+  gltranslatef x,y,z
+  glscalef sc,1,sc
+  glBegin GL_QUADS
+  glTexCoord2f 0.0,0.0 : glVertex3f -1.0,0,-1.0
+  glTexCoord2f u  ,0.0 : glVertex3f  1.0,0,-1.0
+  glTexCoord2f u  ,v   : glVertex3f  1.0,0, 1.0
+  glTexCoord2f 0.0,v   : glVertex3f -1.0,0, 1.0    
+  glend
+  glPopMatrix
+  end sub
+
+  sub initialize(pro hWnd)
+  '=======================
+  end sub
+  '
+
+  sub scene(pro hWnd)
+  '==================
+  '
+  static single s1,s2,s3,s4,ang1,angi1=1
+  single rtri, rquad
+  
+  sphere=CompileList : Spheric 1,1,6 : glEndList
+  '
+  glLoadIdentity
+  glClear GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
+  glClearColor 0.5, 0, 0, 0
+  
+   glShadeModel GL_SMOOTH                         '' Enable Smooth Shading
+   'glClearColor 0.0, 0.0, 0.0, 0.5               '' Black Background
+	glClearDepth 1.0                               '' Depth Buffer Setup
+	glEnable GL_DEPTH_TEST                         '' Enables Depth Testing
+	glDepthFunc GL_LEQUAL                          '' The Type Of Depth Testing To Do
+	glHint GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST    '' Really Nice Perspective Calculations
+
+   glEnable GL_LIGHTING
+  '
+  pro t1=texn[10]
+  pro t2=texn[11]
+  '
+  '--> SPHERES
+  glPushMatrix
+  pindex 1
+  glTranslatef -20.,10.,-60.0
+  Material Red
+  glScalef      6.,6.,6.
+  glCallList sphere
+  Material White
+  glPopMatrix
+  glPushMatrix
+  glTranslatef 2.5,-1.0,-6.0
+  glScalef      .5,.5,.5
+  glCallList sphere
+  glPopMatrix
+  '
+  glEnable GL_TEXTURE_2D
+  '
+  'RenderCube   2.5,-2.0,-6.0, 0.5,t1
+  RenderPlane  0.0,-2.0,-16.0,16.0,t2,8,8
+  '
+  glDisable GL_TEXTURE_2D
+  glDisable GL_LIGHTING
+  '
+  s1=.2    'x y
+  s2=-1    'z
+  s3=0.5   'color
+  s4=s3*.2 'color
+  '
+  gltranslatef 0,0,-2
+  glrotatef ang1, 0,0,1
+  '
+  glbegin GL_QUADS
+  glcolor4f   00,  s3,  s3, 1 : glvertex3f -s1, -s1,  s2
+  glcolor4f   s3,  s3,  00, 1 : glvertex3f  s1, -s1,  s2
+  glcolor4f   s4,   0,  s3, 1 : glvertex3f  s1,  s1,  s2
+  glcolor4f   s4,   0,  s3, 1 : glvertex3f -s1,  s1,  s2
+  glend
+
+         glLoadIdentity                                          
+   		glTranslatef 1.5, 0.0, -6.0                      
+   		glRotatef ang1,1.0, 1.0, 1.0 'rquad              
+   		
+   		glBegin GL_QUADS                                 
+			glColor3f 0.0, 1.0, 0.0                          
+		    glVertex3f 1.0, 1.0, -1.0                       
+		    glVertex3f -1.0, 1.0, -1.0                      
+		    glVertex3f -1.0, 1.0, 1.0                            
+		    glVertex3f 1.0, 1.0, 1.0                             
+		    
+		    glColor3f 1.0, 0.5, 0.0                              
+		    glVertex3f 1.0, -1.0, 1.0                            
+		    glVertex3f -1.0, -1.0, 1.0                           
+		    glVertex3f -1.0, -1.0, -1.0                          
+		    glVertex3f 1.0, -1.0, -1.0                           
+		    
+		    glColor3f 1.0, 0.0, 0.0                              
+		    glVertex3f 1.0, 1.0, 1.0                             
+		    glVertex3f -1.0, 1.0, 1.0                            
+		    glVertex3f -1.0, -1.0, 1.0                           
+		    glVertex3f 1.0, -1.0, 1.0                            
+		    
+		    glColor3f 1.0, 1.0, 0.0                              
+		    glVertex3f 1.0, -1.0, -1.0                           
+		    glVertex3f -1.0, -1.0, -1.0                          
+		    glVertex3f -1.0, 1.0, -1.0                           
+		    glVertex3f 1.0, 1.0, -1.0                            
+		    
+		    glColor3f 0.0, 0.0, 1.0                              
+		    glVertex3f -1.0, 1.0, 1.0                            
+		    glVertex3f -1.0, 1.0, -1.0                           
+		    glVertex3f -1.0, -1.0, -1.0                          
+		    glVertex3f -1.0, -1.0, 1.0                           
+		    
+		    glColor3f 1.0, 0.0, 1.0                              
+		    glVertex3f 1.0, 1.0, -1.0                            
+		    glVertex3f 1.0, 1.0, 1.0                             
+		    glVertex3f 1.0, -1.0, 1.0                            
+		    glVertex3f 1.0, -1.0, -1.0                           
+   		glEnd                                                   
+
+      glLoadIdentity
+   		glTranslatef -1.5, 0.0, -6.0
+          glRotatef ang1,0.0, 1.0, 0.0                             
+      glBegin GL_TRIANGLES                                    
+	    
+		    glColor3f 1.0, 0.0, 0.0                             
+		    glVertex3f 0.0, 1.0, 0.0                            
+		    glColor3f 0.0, 1.0, 0.0                             
+		    glVertex3f -1.0, -1.0, 1.0                          
+		    glColor3f   0.0, 0.0, 1.0                           
+		    glVertex3f 1.0, -1.0, 1.0                            
+		
+		    glColor3f 1.0, 0.0, 0.0                              
+		    glVertex3f 0.0, 1.0, 0.0                             
+		    glColor3f 0.0, 0.0, 1.0                              
+		    glVertex3f 1.0, -1.0, 1.0                            
+		    glColor3f 0.0, 1.0, 0.0                              
+		    glVertex3f 1.0, -1.0, -1.0                           
+		
+		    glColor3f 1.0, 0.0, 0.0                              
+		    glVertex3f 0.0, 1.0, 0.0                             
+		    glColor3f 0.0, 1.0, 0.0                              
+		    glVertex3f 1.0, -1.0, -1.0                           
+		    glColor3f 0.0, 0.0, 1.0                              
+		    glVertex3f -1.0, -1.0, -1.0                          
+		
+		    glColor3f 1.0, 0.0, 0.0                              
+		    glVertex3f 0.0, 1.0, 0.0                             
+		    glColor3f 0.0, 0.0, 1.0                              
+		    glVertex3f -1.0, -1.0, -1.0                          
+		    glColor3f 0.0, 1.0, 0.0                              
+		    glVertex3f -1.0, -1.0, 1.0                           
+		glEnd                                                   
+
+  ang1+=angi1
+  if ang1>360 then ang1-=360
+  '
+  end sub
+
+  sub Release(sys hwnd)
+  '====================
+  end sub
+  '------------------------------------------- //
+  MainWindow width,height,WS_OVERLAPPEDWINDOW
+  ' ends
