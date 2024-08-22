@@ -7,4 +7,4 @@ OOP Programming with classes and UDt Types..and much more
 
 HalPromentBASIC is a compiler and Interpreter. Run programs directly, or compile to 32/64 bit binary.Supports C headers. Similar Syntax Commands like Powerbasic, Freebasic, Oxygenbasic.
  Free available. HobbyProject.
- Author: frank bruebach, germany  july-2024
+ Author: frank bruebach, germany  march - august 2024
