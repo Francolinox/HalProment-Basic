@@ -1,0 +1,89 @@
+  '
+  $ sFile "rotating triangle with font.exe"
+  $ title    "Rotating Triangle and rotating Font"
+  pro width  =640
+  pro height =480
+
+  take proglscene 
+
+  sub Initialize(pro hWnd)
+  '=======================
+  end sub
+  '
+  sub Scene(pro hWnd)
+  '==================
+  '
+  static single ang1,angi1=1
+  '
+  glClearColor 0.3, 0.3, 0.5, 0
+  glClear GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
+  '
+glLoadIdentity
+  glpushMatrix
+  pro i,j
+ glLineWidth 2.0
+  gltranslatef 0,-6.5,-6.0
+  glBegin GL_LINES
+  for i = -20 to 20 '-10 to 10
+          for j = -20 to 20
+            glVertex3i -20, 0,   j     
+            glVertex3i  20, 0,   j     
+            glVertex3i  i,  0, -20     
+            glVertex3i  i,  0,  20     
+          next
+        next
+  glEnd
+ glPopMatrix
+ 
+
+  glLoadIdentity
+  '
+  '
+  gltranslatef    0.0, 0.0, -4.0
+  glrotatef ang1, 0.0, 0.0,  1.0
+  '
+  glBegin GL_TRIANGLES
+  glColor3f   1.0, 0.0, 0.0 : glVertex3f   0.0,  1.0, 0.0
+  glColor3f   0.0, 1.0, 0.0 : glVertex3f  -1.0, -1.0, 0.0
+  glColor3f   0.0, 0.0, 1.0 : glVertex3f   1.0, -1.0, 0.0
+  glEnd
+ 
+ '
+  'UPDATE ROTATION ANGLES
+  '----------------------
+  glPushMatrix
+  '
+  glLoadIdentity
+  static pro framecount
+  sys x,y
+  framecount++
+  gltranslatef -.5,.25,-4.0
+  glColor3f    .99,.50,.50
+  glscalef     .2,.2,.01 
+  gprint "framecounter: "+str(framecount)
+  '
+  glpopmatrix
+
+  glpushMatrix
+  glscalef .2,.2,.01 
+  glRotatef 90.0,0,0,1
+  gprint "Hello triangle"
+  glPopMatrix
+
+  ang1+=angi1
+  if ang1>360 then ang1-=360
+  '
+  glLoadIdentity
+  glpushMatrix
+  gltranslatef    2.0, 0.0, -4.0
+  glscalef     .2,.2,.01 
+  glRotatef 90.0,0,0,1
+  gprint "Hello openGL"
+  glPopMatrix
+'
+ end sub
+
+  sub Release(sys hwnd)
+  '====================
+  end sub
+  ' ends
