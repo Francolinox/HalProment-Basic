@@ -1,0 +1,42 @@
+'' --> macro tests, june-august 2024
+''
+take kons
+
+'--------------------------------- //print message = p? 
+macro test1(arg1, arg2 ) 
+    p? arg1
+    p? arg2
+    if arg2 = "" 
+        p? " 2nd argument not passed"
+    else
+        p? arg2
+    endif
+end macro
+
+test1( "1", "2" ) '122
+test1( 5, 6 ) '566
+
+'--------------------------------- console output //
+macro test2(arg1, arg2 ) 
+    printl arg1
+    printl arg2
+    if arg2 = "" 
+        printl " 2nd argument not passed"
+    else
+        printl arg2
+    endif
+end macro
+
+test2( "1", "2" ) '122
+test2( 5, 6 ) '566
+
+
+ macro mult( v1,v2 )
+ printl v1*v2 ' 8
+ end macro
+
+ mult(2,4)
+ p? mult(2,4) ' 8
+
+printl "ends"
+wait
