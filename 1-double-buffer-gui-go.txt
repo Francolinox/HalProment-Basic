@@ -1,0 +1,173 @@
+    ' double buffering gui test, based on example for o2
+    ' halProment Basic, 30-05-2024, 06-06-2024,21-07-2024
+    '     
+    take promgui
+       
+    MainWindow 550,450,WS_OVERLAPPEDWINDOW
+    '-----------------------------------------------------------------------------
+     
+    % CUSTOM_ID     200
+    % MARGIN        7
+    % CELLSIZE      32 
+    % DARKCOLOR     RGB(0,80,20) 
+    % LIGHTCOLOR    RGB(221,190,0) 
+     
+    type CustomData
+        pro   hwnd
+        pro   style
+        pro   hbrLight
+        pro   hbrDark
+    end type
+     
+    '------------------------------------------------------------------------ //  
+    function WndProc(sys hwnd, uint uMsg, pro wParam, lParam) as pro callback
+        static pro hwndCustom
+       
+        select uMsg
+     
+            case WM_CREATE
+               SetWindowText(hwnd, "Double Buffering Example2")
+     
+               CustomRegister()       
+               hwndCustom = CreateWindowEx(0,CUSTOM_WC, null, WS_CHILD or WS_VISIBLE or 0,
+                                     0, 0, 0, 0, hwnd, CUSTOM_ID, hInstance, null)
+               if hwndCustom = 0 then mbox "Error: Cannot create hwndCustom"
+           
+            case WM_SIZE
+               if wParam = SIZE_MAXIMIZED or wParam = SIZE_RESTORED then
+                 word cx = loword(lParam)
+                 word cy = hiword(lParam)
+                 SetWindowPos(hwndCustom, null, MARGIN, MARGIN,
+                             (cx-2*MARGIN), (cy-2*MARGIN), SWP_NOZORDER)
+               end if
+     
+            case WM_CLOSE
+               DestroyWindow(hwnd)
+     
+            case WM_DESTROY
+               PostQuitMessage(0)
+                       
+            case else
+               return DefWindowProc(hwnd, uMsg, wParam, lParam)
+     
+        end select
+       
+    end function
+
+    sub CustomPaint(CustomData *pData, pro hDC, RECT *rcDirty, bool bErase)
+        pro x, y
+        RECT r
+        pro hBrush
+       
+       
+        ' Note we paint only the cells overlaping with the dirty rectangle.
+        for y = (rcDirty.top / CELLSIZE) to (rcDirty.bottom / CELLSIZE)
+            for x = (rcDirty.left / CELLSIZE) to (rcDirty.right / CELLSIZE)
+                if mod((x+y),2)=0 then hBrush=pData.hbrLight else hBrush=pData.hbrDark
+                SetRect(r, x * CELLSIZE, y * CELLSIZE, (x+1) * CELLSIZE, (y+1) * CELLSIZE)
+                FillRect(hDC, r, hBrush)
+            next x
+        next y
+    end sub
+     
+    sub CustomDoubleBuffer(CustomData *pData, PAINTSTRUCT *pPaintStruct)         
+        int cx = pPaintStruct.rcPaint.right - pPaintStruct.rcPaint.left
+        int cy = pPaintStruct.rcPaint.bottom - pPaintStruct.rcPaint.top
+     
+        pro hMemDC,hBmp,hOldBmp
+        POINT ptOldOrigin
+     
+     
+        ' Create new bitmap-back device context, large as the dirty rectangle.
+        hMemDC = CreateCompatibleDC(pPaintStruct.hdc)
+        hBmp = CreateCompatibleBitmap(pPaintStruct.hdc, cx, cy)
+        hOldBmp = SelectObject(hMemDC, hBmp)
+     
+        ' Do the painting into the memory bitmap.
+        OffsetViewportOrgEx(hMemDC, -(pPaintStruct.rcPaint.left),
+                            -(pPaintStruct.rcPaint.top), ptOldOrigin)
+        CustomPaint(pData, hMemDC, pPaintStruct.rcPaint, true)
+        SetViewportOrgEx(hMemDC, ptOldOrigin.x, ptOldOrigin.y, null)
+     
+        ' Blit the bitmap into the screen. This is really fast operation and altough
+        ' the CustomPaint() can be complex and slow there will be no flicker any more.
+        BitBlt(pPaintStruct.hdc, pPaintStruct.rcPaint.left, pPaintStruct.rcPaint.top,
+               cx, cy, hMemDC, 0, 0, SRCCOPY)
+     
+        ' Clean up.
+        SelectObject(hMemDC, hOldBmp)
+        DeleteObject(hBmp)
+        DeleteDC(hMemDC)
+    end sub
+     
+    function CustomProc(pro hwnd, uint uMsg, sys wParam, lParam) as pro callback
+     
+        CustomData *pData               'Pointer to CustomData structure
+     
+        if uMsg != WM_CREATE then
+           &pData=GetWindowLongPtr(hwnd, 0)
+        end if
+     
+        select case uMsg
+            case WM_NCCREATE
+                pro pdat=getmemory sizeof(CustomData)
+                if pDat then
+                  SetWindowLongPtr(hwnd, 0, pdat)  'Store the pointer for later use
+                else
+                    return false
+                end if
+     
+                &pData=pdat                        'address of pData stucture
+     
+                pData.hwnd = hwnd
+     
+                CREATESTRUCT cstr at lParam
+                pData.style=cstr.style
+               
+                pData.hbrDark = CreateSolidBrush(DARKCOLOR)
+                pData.hbrLight = CreateSolidBrush(LIGHTCOLOR)           
+                return true
+     
+            case WM_ERASEBKGND
+                return false  ' Defer erasing into WM_PAINT
+     
+            case WM_PAINT
+                PAINTSTRUCT ps
+                BeginPaint(hwnd, ps)
+               
+                ' We let application to choose whether to use double buffering 
+                ' or not by using the style XXS_DOUBLEBUFFER.
+                if(pData.style and XXS_DOUBLEBUFFER) then                       
+                    CustomDoubleBuffer(pData, ps)
+                else           
+                    CustomPaint(pData, ps.hdc, ps.rcPaint, ps.fErase)
+                end if
+                EndPaint(hwnd, ps)
+                return 0
+     
+            case WM_PRINTCLIENT
+                RECT rc
+                GetClientRect(hwnd, rc)
+                CustomPaint(pData, wParam, rc, true)
+                return 0
+     
+            case WM_STYLECHANGED
+                if wParam = GWL_STYLE then                       
+                    pData.style = lParam
+                end if
+                break
+     
+            case WM_NCDESTROY     
+                if &pData then
+                    DeleteObject(pData.hbrDark)
+                    DeleteObject(pData.hbrLight)
+                    freememory(&pData)
+                end if
+                CustomUnregister()
+                return 0
+     
+        end select
+       
+        return DefWindowProc(hwnd, uMsg, wParam, lParam)
+    end function
+    ' ends
