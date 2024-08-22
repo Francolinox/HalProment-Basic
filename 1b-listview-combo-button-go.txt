@@ -1,0 +1,202 @@
+'' testfile for Listview & Colored Button based on example by charles pegge
+'' translated to halProment Basic 2024, by frank bruebach, march-july2024
+'' 25-07-2024, 28-07-2024.
+''
+$ sFile "ListviewColoredButtonCombobox.exe"
+uses promgui 
+
+'--------------------------------------- //
+% IDB_BUTTON  1000
+sys hWndStdButton
+% IDC_OWNERDRAWN  1001
+sys hWndClrButton
+% IDB_EDIT  2000
+sys hWndStdEdit
+% IDB_LIST  2001
+sys hWndStdList
+% IDC_COMBO  2002
+sys hWndStdCombo
+
+ %CBS_SORT = 256i32
+ %CBS_DROPDOWN= 2i32
+ %CBS_SIMPLE= dword 0x0001
+
+MainWindow 640, 620 , WS_OVERLAPPEDWINDOW
+'void Combobox_Addstring(hwndctl,lpsz)
+ 
+function combobox_addstring(byval hwndcombo as dword , byval ltext as bstring ) as string
+function=sendMessage(hwndcombo,CB_ADDSTRING, 0, ltext ) 'strptr(ltext)
+end function
+   
+sub combobox_setcursel(byval hwndcombo as dword , byval index as long ) 
+sendMessage(hwndcombo,CB_SETCURSEL, index,0 )
+end sub
+
+function WndProc(sys hwnd, uint MainMsg, sys wParam, lParam) as sys callback
+    int i,j,countrow,countcol
+
+    select case MainMsg
+
+        case WM_CREATE
+            SetWindowText(hwnd, "Listview Editbox Combobox Example Proment")
+
+            sys hInstance = GetWindowLongPtr(hWnd, GWL_HINSTANCE)
+
+            int Lstyle = WS_CHILD or WS_VISIBLE or LVS_REPORT or WS_TABSTOP or LVS_SHOWSELALWAYS or LVS_SINGLESEL or WS_TABSTOP or _
+            LVS_REPORT or LVS_SHOWSELALWAYS         
+            int LStyleEx = WS_EX_CLIENTEDGE
+     
+            hWndStdButton = CreateWindowEx(
+            0,
+            "BUTTON",
+            "Standard Button",
+            WS_VISIBLE or WS_CHILD,
+            10,  10,
+            120, 24,
+            hWnd,
+            IDB_BUTTON,
+            hInstance,
+            NULL)
+
+            hWndClrButton = CreateWindowEx(
+            0,
+            "BUTTON",
+            NULL,
+            WS_CHILD or BS_OWNERDRAW,
+            10,  40,
+            120, 24,
+            hWnd,
+            IDC_OWNERDRAWN,
+            GetWindowLongPtr(hWnd, GWL_HINSTANCE),
+            NULL)
+
+            hWndStdEdit = CreateWindowEx(
+            0,
+            "EDIT",
+            "", ''NULL,
+            WS_CHILD or WS_VISIBLE or WS_BORDER or ES_AUTOHSCROLL or WS_HSCROLL or WS_VSCROLL OR ES_MULTILINE OR ES_WANTRETURN,
+            10,  100,
+            120, 124,
+            hWnd,
+            IDB_EDIT,
+            GetWindowLongPtr(hWnd, GWL_HINSTANCE),
+            NULL)
+                        ' Set an initial text for the textbox
+            SendMessage(hwndStdEdit, WM_SETTEXT, 0, StrPtr("input text here "))
+            '
+            if not hWndClrButton then
+                MessageBox(NULL, "Button Creation Failed.", "Error", MB_OK or MB_ICONERROR)
+                return 0
+            end if
+            ShowWindow(hWndClrButton, SW_SHOW)
+
+            '----------------------> combobox , there are three ways to fill it ------------------- //           
+            
+            hWndStdCombo = CreateWindowEx(
+            0,
+            "Combobox",
+            "", ''NULL,
+            WS_CHILD or WS_VISIBLE or WS_BORDER or ES_AUTOHSCROLL or WS_HSCROLL or WS_VSCROLL _
+            OR ES_MULTILINE OR WS_TABSTOP OR CBS_SIMPLE OR CBS_SORT, ''_ '%CBS_DROPDOWNLIST,
+            10,  230,
+            120, 124,
+            hWnd,
+            IDC_COMBO,
+            GetWindowLongPtr(hWnd, GWL_HINSTANCE),
+            NULL)
+            sys List1=GetDlgItem(hwnd, IDC_Combo)
+  
+            ' // Fill the control with some data
+            DIM wszText as string 
+            int i
+            FOR i = 1 TO 9
+            wszText = "Marvel " + RIGHT("00" + STR(i), 2)
+            ComboBox_AddString(hWndStdCombo, wszText) '@wszText
+            
+            NEXT
+            ComboBox_SetCursel(hWndStdCombo, 0)
+            
+           '--------------------------------> // listview ------------------------------ //
+            '
+            hWndStdList = CreateWindowEx(WS_EX_CLIENTEDGE, "SysListView32", "",lStyle,
+            140,  10,
+            420, 460,
+            hWnd,
+            IDB_LIST,
+            GetWindowLongPtr(hWnd, GWL_HINSTANCE),
+            NULL)
+            if hWndStdList=null then print "Error: Cannot create Listview"
+            SendMessage(hWndStdList, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,  LVS_EX_FULLROWSELECT or LVS_EX_GRIDLINES)
+			   CountRow=26   : CountCol=6 : LV_COLUMN lvc
+         
+       for i = 0 to CountCol
+          Listview_Add_column (hWnd,IDB_LIST, i, "Marvel " + str(i), 110, 0)      
+       next i
+     
+       for i = 1 to CountRow
+          Listview_Add_item (hWnd,IDB_LIST, i, 0, "Column 0 Row " + str(i) + " Col 1")
+          for j = 1 to CountCol
+             Listview_Set_Item (hWnd,IDB_LIST, i, j, "IronMan " + str(i) + " Thor " + str(j))
+          next j
+       next i
+       
+       '--------------------------------------------- listview ends ---------------------- //      
+        case WM_DRAWITEM
+            select case wParam
+                case IDC_OWNERDRAWN
+
+                    'get the pointer to the item-drawing info
+                    DRAWITEMSTRUCT *ptDrawItem
+                    &ptDrawItem=lParam
+                    ' alternative
+                    'DRAWITEMSTRUCT ptDrawItem at lParam                   
+
+                    SIZE siz
+                    string text
+                    text = "Color Button"
+                    GetTextExtentPoint32(ptDrawItem.hDC, text, len(text), &siz)
+                    SetTextColor(ptDrawItem.hDC, WHITE)
+                    SetBkColor(ptDrawItem.hDC, RED)
+
+                    ExtTextOut(ptDrawItem.hDC,
+                    ((ptDrawItem.rcItem.right - ptDrawItem.rcItem.left) - siz.cx) \ 2,
+                    ((ptDrawItem.rcItem.bottom - ptDrawItem.rcItem.top) - siz.cy) \ 2,
+                    ETO_OPAQUE or ETO_CLIPPED, &ptDrawItem.rcItem, text, len(text), NULL)
+
+                    uint edge
+                    if ptDrawItem.itemState and ODS_SELECTED then
+                      edge = EDGE_SUNKEN
+                    else
+                      edge = EDGE_RAISED
+                    end if   
+                    DrawEdge(ptDrawItem.hDC, &ptDrawItem.rcItem,
+                    edge, BF_RECT)               
+            end select
+
+        case WM_COMMAND
+            select case loword(wParam)
+                case IDB_BUTTON
+                    select case hiword(wParam)
+                        case BN_CLICKED
+                            MessageBox(NULL, "Selected Standard Button", "Standard Button", MB_OK or MB_ICONINFORMATION)
+                    end select
+                case IDC_OWNERDRAWN
+                    select case hiword(wParam)
+                        case BN_CLICKED
+                            MessageBox(NULL, "Selected Color Button", "Color Button", MB_OK or MB_ICONINFORMATION)
+                    end select
+            end select
+
+        case WM_CLOSE
+            DestroyWindow(hWnd)
+
+        case WM_DESTROY
+            PostQuitMessage(0)
+
+        case else
+            return DefWindowProc(hWnd, MainMsg, wParam, lParam)
+    end select
+
+    return 0
+end function
+' ends
