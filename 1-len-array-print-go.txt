@@ -1,0 +1,21 @@
+' len example and array, july-august2024, f. bruebach
+' halProment
+'
+take kons ' kons = konsole
+
+Dim ps As pstring
+ps = "ABCD[2]"
+MsgBox Str(Len(ps)) ' 7
+printl Str(Len(ps)) ' 7
+
+p$ ps2 ' p$ = string alternative
+ps2 = "ABCDE[2]"
+MsgBox Str(Len(ps2)) ' 8
+p? Str(Len(ps2))   ' 8
+
+Dim st as string
+st = "HALPPROM[2]"
+MsgBox Str(Len(st)) ' 11
+printl Str(Len(st)) ' 11
+
+wait
