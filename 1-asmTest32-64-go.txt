@@ -1,0 +1,34 @@
+' 32 bit and 64 bit example, go, 18-08-2024, fbruebach
+' if you want to compile please use: menu: compile/run compiling 64-bit
+'
+take kons
+
+''32 Bit version x86
+pfun Mal(long x,y) as pro
+    mov  eax, [x] 'take x to eax
+    imul eax, [y] 'multiply with y
+    mov [function], eax 'result  
+end function
+
+pro a = 45, b = 54
+printl Mal(a, b)
+p? Mal(a, b) '2430
+printl
+printl "push to continue"
+wait
+
+printl "test 64-bit"
+
+'' for x86_64 architecture (64-Bit):
+' 64 bit version
+pfun Mal2(long x,y) as pro
+    mov  rax, [x] ' take x to rax
+    imul rax, [y] ' multiply with y
+    mov [pfun], rax 'result
+end function
+
+pro a2 = 2123456789, b2 = 2987654321
+printl Mal2(a2, b2) '1822673797
+p? Mal2(a2, b2)
+wait
+' ends
