@@ -1,15 +1,15 @@
-Hello all.. I was ill for some weeks
- my left Index finger was broken and
- beside that I have Job and Family so
- there was Not enough time for an
- Update.. sorry..
 
-I Have Made some Progress with new
- examples, gui, openGl , macros, dim 
-variable and suffixes, much more..
- I add new examples at my other Board.. 
-more to come later..
+'  infos, news
+'  halProment Basic, update 6, 22. august 2024, time periode march-august 2024,frank bruebach, germany
+'  using at own risc, have fun :-)
+'  halProment.Dll updated, halpromIde24 IDE updated.
+'  compiling 32, 64 bit possible
+'  new ones: GUI example and OpgenGL examples (beginning, 3 expl), dim variable suffixes, print alternatives, macros,
+   parse, parser examples, listview combobox button etcpp
+ 
+'  as I was ill for some weeks in summer time , my left index finger was broken, I couldn't 
+'  make any progress, sorry
+'  more updates will come, all works in progress, regards, frank
+'  if you have any question or wishes please ask or contact me via the board here
 
-And send an updated Version of HalProment Basic
- (22. August 2024). Tested all examples again. 
-Hope they are working all fine, thanks Frank
+' 22.+23. August 2024, frank
