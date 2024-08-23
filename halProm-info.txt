@@ -1,4 +1,3 @@
-
 '  infos, news
 '  halProment Basic, update 6, 22. august 2024, time periode march-august 2024,frank bruebach, germany
 '  using at own risc, have fun :-)
