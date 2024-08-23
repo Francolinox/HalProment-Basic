@@ -1,2 +1,5 @@
-'  halProment Basic, update 6, 22. march->august 2024, frank bruebach, germany
-'  using at own risc, have fun :-)
+Hello all.. I was ill for some weeks my left Index finger was broken and beside that I have Job and Family so there was Not enough time for an Update.. sorry..
+
+I Have Made some Progress with new examples, gui, openGl , macros, dim variable and suffixes, much more.. I add new examples at my other Board.. more to come later..
+
+And send an updated Version of HalProment Basic (22. August 2024). Tested all examples again. Hope they are working all fine, thanks Frank
