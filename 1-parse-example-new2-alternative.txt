@@ -1,0 +1,45 @@
+' new parse example halProment, april-august2024, frank bruebach
+' alternative example, 22-23/08/2024
+'
+take kons 'same like: #include konsole 
+pindex 1
+
+function Parse(pstring expression, delimiter as string= ",", int index ) as pstring 
+    int count = 1
+    pstring temp = ""
+    pro d = 1
+    pro f = 0
+    pro i = 0
+    pstring z ""
+    do
+        i = instr(d, expression, delimiter)
+        if i > 0 then
+            f = i
+            if count = index then
+                exit do
+            end if
+            count += 1
+            f += Len(delimiter)
+            d = f
+        elseif count = index then
+            f = Len(expression) + 1
+        end if
+    loop until i = 0
+     return MID(expression,d, f-d) 
+         
+end function
+
+printl "parse example test"
+printl ""
+pstring a,b,c
+a = parse("one,two,three", ,2) '' ok -> returns "two"  
+
+b = parse("xyz", , 1)            ' ok -> returns "xyz"
+
+c = parse("xx1x","x", 3)         ' ok -> returns "1" 
+
+Printl "'" + a + "'"
+Printl "'" + b + "'"
+Printl "'" + c + "'"
+
+wait
