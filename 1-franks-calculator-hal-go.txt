@@ -1,0 +1,122 @@
+' -- halProment-> franks calculator
+' -- 23.03.2024, 22.08.2024, translated of my own freebasic example ;)
+'
+'
+take promgui
+
+% IDB_BUTTON 100
+sys hWndStdButton
+
+% IDC_OWNERDRAWN  1000
+sys hWndClrButton
+
+% IDC_TRANSLATE 1001
+sys hWndClrButton2
+
+% IDC_EDIT 1002
+sys myEdit
+
+% IDC_EDIT2 1003
+sys myEdit2
+
+MainWindow 440, 320 , WS_OVERLAPPEDWINDOW
+
+' Constants for controls
+% IDC_NUM1 = 1001
+% IDC_NUM2 = 1002
+% IDC_RESULT = 1003
+% IDC_ADD = 2001
+% IDC_SUBTRACT = 2002
+% IDC_MULTIPLY = 2003
+% IDC_DIVIDE = 2004
+% IDC_CALCULATE = 2005
+
+
+Function WndProc(pro hwnd, uint MainMsg, pro wParam, lParam) as pro callback
+    select case MainMsg
+        case WM_CREATE
+            SetWindowText(hwnd, "frank's Translator")
+
+            sys hInstance = GetWindowLongPtr(hWnd, GWL_HINSTANCE)
+
+            ' Create edit boxes for numbers
+            CreateWindowEx(0, "EDIT", "", WS_CHILD Or WS_VISIBLE Or WS_BORDER Or ES_MULTILINE Or ES_AUTOHSCROLL, 50, 50, 100, 20, hWnd, IDC_NUM1, GetModuleHandle(Null), ByVal Null)
+            CreateWindowEx(0, "EDIT", "", WS_CHILD Or WS_VISIBLE Or WS_BORDER Or ES_MULTILINE Or ES_AUTOHSCROLL, 200, 50, 100, 20, hWnd, IDC_NUM2, GetModuleHandle(Null), ByVal Null)
+            
+            ' Create radio buttons for operations
+            CreateWindowEx(0, "BUTTON", "+", WS_CHILD Or WS_VISIBLE Or BS_AUTORADIOBUTTON, 50, 100, 50, 20, hWnd, IDC_ADD, GetModuleHandle(Null), ByVal Null)
+            CreateWindowEx(0, "BUTTON", "-", WS_CHILD Or WS_VISIBLE Or BS_AUTORADIOBUTTON, 100, 100, 50, 20, hWnd, IDC_SUBTRACT, GetModuleHandle(Null), ByVal Null)
+            CreateWindowEx(0, "BUTTON", "*", WS_CHILD Or WS_VISIBLE Or BS_AUTORADIOBUTTON, 150, 100, 50, 20, hWnd, IDC_MULTIPLY, GetModuleHandle(Null), ByVal Null)
+            CreateWindowEx(0, "BUTTON", "/", WS_CHILD Or WS_VISIBLE Or BS_AUTORADIOBUTTON, 200, 100, 50, 20, hWnd, IDC_DIVIDE, GetModuleHandle(Null), ByVal Null)
+            
+            ' Create button for calculation
+            CreateWindowEx(0, "BUTTON", "=", WS_CHILD Or WS_VISIBLE Or BS_AUTORADIOBUTTON, 250, 100, 50, 20, hWnd, IDC_CALCULATE, GetModuleHandle(Null), ByVal Null)
+            
+            ' Create edit box for result
+            CreateWindowEx(0, "EDIT", "", WS_CHILD Or WS_VISIBLE Or WS_BORDER Or ES_MULTILINE Or ES_AUTOHSCROLL Or ES_READONLY, 50, 150, 250, 20, hWnd, IDC_RESULT, GetModuleHandle(Null), ByVal Null)
+            
+            ' Set default operation to addition
+            SendDlgItemMessage(hWnd, IDC_ADD, BM_SETCHECK, BST_CHECKED, 0)
+
+   Case WM_COMMAND
+    If HIWORD(wParam) = BN_CLICKED Then
+        dim operation As String
+ 
+        ' Get selected operation
+        Select Case LOWORD(wParam)
+            Case IDC_ADD
+                operation = "+"
+            Case IDC_SUBTRACT
+                operation = "-"
+            Case IDC_MULTIPLY
+                operation = "*"
+            Case IDC_DIVIDE
+                operation = "/"
+            Case IDC_CALCULATE
+                Dim num1 As Double
+                Dim num2 As Double
+                Dim result As Double
+                dim as string snum1=space(21)
+                dim as string snum2=space(21)
+                dim as string sresult=space(21)
+                
+                GetDlgItemText(hWnd, IDC_NUM1, strptr(snum1), 20) 
+                GetDlgItemText(hWnd, IDC_NUM2, strptr(snum2), 20) 
+					num1= val(snum1)
+					num2= val(snum2)
+
+                ' Perform calculation based on selected operation
+                Select Case operation
+                    Case "+"
+                        result = num1 + num2
+                    Case "-"
+                        result = num1 - num2
+                    Case "*"
+                        result = num1 * num2
+                    Case "/"
+                        If num2 <> 0 Then
+                            result = num1 / num2
+                        Else
+                            Print "Cannot divide by zero! Error"
+                            Exit Function
+                        End If
+                    case else
+                    ''default addition otherwise result = zero
+                    result = num1 + num2
+                End Select
+				sresult=str(result)
+                ' Display result
+                SetDlgItemText(hWnd, IDC_RESULT, Strptr(sresult))
+        End Select
+    End If
+ 
+    	Case WM_CLOSE
+            DestroyWindow(hWnd)
+        Case WM_DESTROY
+            PostQuitMessage(0)
+        Case Else
+            Return DefWindowProc(hWnd, MainMsg, wParam, lParam)
+    End Select
+    Return 0
+End Function
+' ends
